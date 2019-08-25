@@ -19,3 +19,4 @@ go run calc-client/client.go
 > See screenshot below for example with server running on left and client
 > executing on right.
 
+![screenshot](images/screenshot.png)
