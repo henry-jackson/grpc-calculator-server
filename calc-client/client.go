@@ -34,5 +34,5 @@ func main() {
 		log.Fatalf("Failed to send calculation request: %s", err)
 	}
 
-	fmt.Printf("Get response: %v", res.GetResult())
+	fmt.Printf("Get response: %v\n", res.GetResult())
 }
