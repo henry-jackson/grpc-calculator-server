@@ -12,7 +12,7 @@ go run calc-server/server.go
 
 #### Client
 ```sh
-go run calc-client™
+go run calc-client/client.go
 ```
 
 ## Example
