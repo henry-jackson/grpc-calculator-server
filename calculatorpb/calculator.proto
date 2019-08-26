@@ -21,6 +21,14 @@ message PrimeNumberDecompositionResponse {
   int32 result = 1;
 }
 
+message CalculateAverageRequest {
+  int32 input = 1;
+}
+
+message CalculateAverageResponse {
+  double result = 1;
+}
+
 service CalculatorService {
   // unary api method
   rpc Sum(SumRequest) returns (SumResponse) {};
@@ -28,4 +36,8 @@ service CalculatorService {
   // server streaming api method
   rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns
     (stream PrimeNumberDecompositionResponse) {};
+
+  /// client streaming api method
+  rpc CalculateAverage(stream CalculateAverageRequest) returns (CalculateAverageResponse)
+  {};
 }

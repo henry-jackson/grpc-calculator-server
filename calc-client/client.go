@@ -15,7 +15,7 @@ import (
 func main() {
 	cc, err := grpc.Dial("0.0.0.0:50051", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Failed to dial: %s", err)
+		log.Fatalf("Failed to dial: %s\n", err)
 	}
 	defer cc.Close()
 
@@ -25,7 +25,10 @@ func main() {
 	// doUnary(c)
 
 	// uncomment to test response streaming behavior
-	doServerStreaming(c)
+	// doServerStreaming(c)
+
+	// uncomment to test request streaming behavior
+	doClientStreaming(c)
 
 }
 
@@ -41,7 +44,7 @@ func doUnary(c calculatorpb.CalculatorServiceClient) {
 
 	res, err := c.Sum(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Failed to send calculation request: %s", err)
+		log.Fatalf("Failed to send calculation request: %s\n", err)
 	}
 
 	fmt.Printf("Got response: %v\n", res.GetResult())
@@ -58,7 +61,7 @@ func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
 
 	stream, err := c.PrimeNumberDecomposition(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Failed to connect stream server response: %s", err)
+		log.Fatalf("Failed to stream responses: %s\n", err)
 	}
 	for {
 		res, err := stream.Recv()
@@ -67,8 +70,35 @@ func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Unexpected error: %s", err)
+			log.Fatalf("Unexpected error: %s\n", err)
 		}
 		fmt.Printf("Got prime factor of: %v\n", res.GetResult())
 	}
+}
+
+func doClientStreaming(c calculatorpb.CalculatorServiceClient) {
+	rand.Seed(time.Now().UnixNano()) // set our random seed
+
+	stream, err := c.CalculateAverage(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to stream requestse %s\n", err)
+	}
+
+	for i := 0; i < 5; i++ {
+		err := stream.Send(&calculatorpb.CalculateAverageRequest{
+			Input: rand.Int31n(100),
+		})
+		if err != nil {
+			log.Fatalf("Failed to send request: %s\n", err)
+		}
+		// simulate delay between inputs
+		time.Sleep(time.Millisecond * 200)
+	}
+
+	response, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Failed to close and receive response: %s\n", err)
+	}
+
+	fmt.Printf("Got response from CalculateAverage rpc: %v\n", response)
 }

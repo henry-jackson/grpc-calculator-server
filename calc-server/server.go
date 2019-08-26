@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
 
@@ -44,16 +45,43 @@ func (s *server) PrimeNumberDecomposition(in *calculatorpb.PrimeNumberDecomposit
 	return nil
 }
 
+func (s *server) CalculateAverage(stream calculatorpb.CalculatorService_CalculateAverageServer) error {
+	// slice to store all streamed inputs
+	nums := []float64{}
+	for {
+		req, err := stream.Recv()
+		fmt.Printf("Received request: %v\n", req.GetInput())
+		// if client says no more data is coming, calculate our response and
+		// send it
+		if err == io.EOF {
+			var sum float64
+			for _, num := range nums {
+				sum += num
+			}
+			avg := sum / float64(len(nums))
+			return stream.SendAndClose(&calculatorpb.CalculateAverageResponse{
+				Result: avg,
+			})
+		}
+		// check that err was nil
+		if err != nil {
+			log.Fatalf("Unexpected error from client stream: %v\n", err)
+		}
+		// grab input
+		nums = append(nums, float64(req.GetInput()))
+	}
+}
+
 func main() {
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
-		log.Fatalf("Failed to listen: %s", err)
+		log.Fatalf("Failed to listen: %s\n", err)
 	}
 
 	s := grpc.NewServer()
 	calculatorpb.RegisterCalculatorServiceServer(s, &server{})
 
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %s", err)
+		log.Fatalf("Failed to serve: %s\n", err)
 	}
 }
