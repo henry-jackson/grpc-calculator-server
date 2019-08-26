@@ -24,6 +24,26 @@ func (s *server) Sum(ctx context.Context, in *calculatorpb.SumRequest) (out *cal
 	return out, nil
 }
 
+func (s *server) PrimeNumberDecomposition(in *calculatorpb.PrimeNumberDecompositionRequest, srv calculatorpb.CalculatorService_PrimeNumberDecompositionServer) error {
+	fmt.Printf("Received request: %v\n", in)
+	n := in.GetInput()
+
+	var divisor int32 = 2
+	for n > 1 {
+		if n%divisor == 0 {
+			// this is a factor, send a response
+			srv.Send(&calculatorpb.PrimeNumberDecompositionResponse{
+				Result: divisor,
+			})
+			n = n / divisor // divide so that we have the rest of the number left.
+		} else {
+			divisor++
+			fmt.Printf("Divisor is: %v\n", divisor)
+		}
+	}
+	return nil
+}
+
 func main() {
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {

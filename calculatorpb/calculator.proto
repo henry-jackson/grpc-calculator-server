@@ -13,7 +13,19 @@ message SumResponse {
   int32 result = 1;
 }
 
+message PrimeNumberDecompositionRequest {
+  int32 input = 1;
+}
+
+message PrimeNumberDecompositionResponse {
+  int32 result = 1;
+}
+
 service CalculatorService {
   // unary api method
   rpc Sum(SumRequest) returns (SumResponse) {};
+
+  // server streaming api method
+  rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns
+    (stream PrimeNumberDecompositionResponse) {};
 }

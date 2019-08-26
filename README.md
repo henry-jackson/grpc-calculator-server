@@ -1,5 +1,7 @@
 # grpc-calculator-server
-> implements a basic gRPC unary API server that sums two numbers for clients
+> implements a basic gRPC API server that has unary, server streaming, client
+> streaming, and bidirectional streaming methods along with sample client side
+> code.
 
 ## How to Run
 > Assumes you have already installed protoc, grpc-go, the Go language, etc. See [this
@@ -16,7 +18,12 @@ go run calc-client/client.go
 ```
 
 ## Example
-> See screenshot below for example with server running on left and client
+> See screenshots below for example with server running on left and client
 > executing on right.
 
-![screenshot](images/screenshot.png)
+#### Unary - Sum two numbesr
+![unary-screenshot](images/unary-screenshot.png)
+
+
+#### Server streaming - Find prime factors of number
+![sever-streaming-screenshot](images/server-streaming-screenshot.png)
