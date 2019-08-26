@@ -29,7 +29,7 @@ go run calc-client/client.go
 
 
 #### Server streaming - Find prime factors of number
-![sever-streaming-screenshot](images/server-streaming-screenshot.png)
+![sever-streaming-screenshot](images/server-streaming.gif)
 
 #### Client streaming - Calculate average of streamed inputs
 ![client-streaming-screenshot](images/client-streaming.gif)
