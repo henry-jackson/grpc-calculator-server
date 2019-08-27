@@ -39,4 +39,4 @@ go run *.go
 ![client-streaming-screenshot](images/client-streaming.gif)
 
 #### Bidirectional streaming - Find maximum of streamed inputs
-![bidirectional-streaming-screenshot](images/bidirectional-stream.gif]
+![bidirectional-streaming-screenshot](images/bidirectional-stream.gif)
