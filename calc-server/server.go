@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 
 	"github.com/henry-jackson/grpc-calculator-server/calculatorpb"
-	"google.golang.org/grpc"
 )
 
+// matches the protoc generated interface
 type server struct{}
 
 func (s *server) Sum(ctx context.Context, in *calculatorpb.SumRequest) (out *calculatorpb.SumResponse, err error) {
@@ -72,16 +71,28 @@ func (s *server) CalculateAverage(stream calculatorpb.CalculatorService_Calculat
 	}
 }
 
-func main() {
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
-	if err != nil {
-		log.Fatalf("Failed to listen: %s\n", err)
-	}
-
-	s := grpc.NewServer()
-	calculatorpb.RegisterCalculatorServiceServer(s, &server{})
-
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %s\n", err)
+func (s *server) FindMaximum(stream calculatorpb.CalculatorService_FindMaximumServer) error {
+	var max int32
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			log.Println("Reached end of requests. Finishing stream...")
+			return nil
+		}
+		if err != nil {
+			log.Fatalf("Unexpected error from client stream: %v\n", err)
+			return err
+		}
+		n := req.GetInput()
+		if n > max {
+			max = n
+			log.Printf("Sending new maximum %v\n", max)
+			err = stream.Send(&calculatorpb.FindMaximumResponse{
+				CurrentMax: max,
+			})
+			if err != nil {
+				log.Fatalf("Unexpected error from client stream: %v\n", err)
+			}
+		}
 	}
 }
